@@ -70,12 +70,12 @@ func (server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, D
 	//frontend implementation, also this one will work with the front
 	//end implementation for serving and queryng
 	fs := http.FileServer(http.Dir("../receiptfrontend/dist"))
-	server.Router.PathPrefix("/").Handler(fs)
+	server.Router.PathPrefix("/vue").Handler(fs)
 
 	//server route will ease the proccess of receiving and handling the
 	//the controlers routes
 	http.Handle("/", server.Router)
-	// server.initializeRoutes()
+	server.initializeRoutes()
 }
 
 func (server *Server) Run(addr string) {

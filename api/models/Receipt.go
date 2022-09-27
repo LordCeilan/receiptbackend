@@ -20,8 +20,8 @@ func (r *Receipt) Prepare() {
 }
 
 func (r *Receipt) SaveReceipt(db *gorm.DB, c *Client) (*Receipt, error) {
-	// var err error
-	err := db.Debug().Model(&Receipt{}).Where("clientid = ?", c.Receipts.ClientID).Create(&c).Error
+	var err error
+	err = db.Debug().Model(&Receipt{}).Where("clientid = ?", c.Receipts.ClientID).Create(&c).Error
 	if err != nil {
 		return nil, err
 	}
@@ -29,16 +29,16 @@ func (r *Receipt) SaveReceipt(db *gorm.DB, c *Client) (*Receipt, error) {
 }
 
 func (r *Receipt) FindAllReceipts(db *gorm.DB, c *Client) (*[]Receipt, error) {
-	// var err error
+	var err error
 	receipts := []Receipt{}
-	err := db.Debug().Model(&Receipt{}).Where("clientid = ?", c.Receipts.ClientID).Find(&receipts).Error
+	err = db.Debug().Model(&Receipt{}).Where("clientid = ?", c.Receipts.ClientID).Find(&receipts).Error
 
 	if err != nil {
 		return &[]Receipt{}, nil
 	}
 
 	if len(receipts) > 0 {
-		for i, _ := range receipts {
+		for i := range receipts {
 			err := db.Debug().Model(&Client{}).Where("receipt = ? ", receipts[i].ClientID).Take(&receipts[i].Contents).Error
 			if err != nil {
 				return &[]Receipt{}, err

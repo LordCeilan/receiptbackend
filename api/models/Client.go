@@ -40,8 +40,8 @@ func (c *Client) Validate() error {
 }
 
 func (c *Client) SaveClient(db *gorm.DB) (*Client, error) {
-	// var err error
-	err := db.Debug().Create(&c).Error
+	var err error
+	err = db.Debug().Model(&Client{}).Where("id = ?", c.Receipts.ClientID).Take(&c.Receipts).Error
 	if err != nil {
 		return &Client{}, err
 	}
@@ -49,29 +49,29 @@ func (c *Client) SaveClient(db *gorm.DB) (*Client, error) {
 }
 
 func (c *Client) FindAllClients(db *gorm.DB) (*[]Client, error) {
-	// var err error
+	var err error
 	clients := []Client{}
-	err := db.Debug().Model(&Client{}).Limit(100).Find(&clients).Error
+	err = db.Debug().Model(&Client{}).Limit(100).Find(&clients).Error
 	if err != nil {
 		return &[]Client{}, err
 	}
 	return &clients, err
 }
 
-func (c *Client) FindClientByID(db *gorm.DB, uid int32) (*Client, error) {
-	// var err error
-	err := db.Debug().Model(User{}).Where("id = ?", uid).Take(&c).Error
+func (c *Client) FindClientByID(db *gorm.DB, cid uint64) (*Client, error) {
+	var err error
+	err = db.Debug().Model(User{}).Where("id = ?", cid).Take(&c).Error
 	if err != nil {
 		return &Client{}, err
 	}
 	if gorm.IsRecordNotFoundError(err) {
-		return &Client{}, err
+		return &Client{}, errors.New("User Not Found")
 	}
 	return c, err
 }
 
-func (c *Client) UpdateAClient(db *gorm.DB, uid uint32) (*Client, error) {
-	db = db.Debug().Model(&Client{}).Where("id = ?", uid).Take(&Client{}).UpdateColumn(
+func (c *Client) UpdateAClient(db *gorm.DB, cid uint32) (*Client, error) {
+	db = db.Debug().Model(&Client{}).Where("id = ?", cid).Take(&Client{}).UpdateColumn(
 		map[string]interface{}{
 			"name":       c.Name,
 			"email":      c.Email,
@@ -83,7 +83,7 @@ func (c *Client) UpdateAClient(db *gorm.DB, uid uint32) (*Client, error) {
 		return &Client{}, db.Error
 	}
 
-	err := db.Debug().Model(&Client{}).Where("id = ?", uid).Take(&c).Error
+	err := db.Debug().Model(&Client{}).Where("id = ?", cid).Take(&c).Error
 	if err != nil {
 		return &Client{}, err
 	}
