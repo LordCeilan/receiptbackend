@@ -10,10 +10,10 @@ import (
 )
 
 type Client struct {
-	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
-	Name      string    `gorm:"size:255;not null; unique" json:"name"`
-	Email     string    `gorm:"size:100;not null;unique" json:"email"`
-	Receipts  Receipt   `gorm:"foreignKey:UserRefer json:receipt"`
+	ID    uint32 `gorm:"primary_key;auto_increment" json:"id"`
+	Name  string `gorm:"size:255;not null; unique" json:"name"`
+	Email string `gorm:"size:100;not null;unique" json:"email"`
+	// Receipts  Receipt   `gorm:"foreignKey:UserRefer json:receipt"`
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
@@ -22,7 +22,6 @@ func (c *Client) Prepare() {
 	c.ID = 0
 	c.Name = html.EscapeString(strings.TrimSpace(c.Name))
 	c.Email = html.EscapeString(strings.TrimSpace(c.Email))
-	c.Receipts = Receipt{}
 	c.CreatedAt = time.Now()
 	c.UpdatedAt = time.Now()
 }
@@ -40,8 +39,7 @@ func (c *Client) Validate() error {
 }
 
 func (c *Client) SaveClient(db *gorm.DB) (*Client, error) {
-	var err error
-	err = db.Debug().Model(&Client{}).Where("id = ?", c.Receipts.ClientID).Take(&c.Receipts).Error
+	err := db.Debug().Create(&c).Error
 	if err != nil {
 		return &Client{}, err
 	}
@@ -71,6 +69,7 @@ func (c *Client) FindClientByID(db *gorm.DB, cid uint64) (*Client, error) {
 }
 
 func (c *Client) UpdateAClient(db *gorm.DB, cid uint32) (*Client, error) {
+	var err error
 	db = db.Debug().Model(&Client{}).Where("id = ?", cid).Take(&Client{}).UpdateColumn(
 		map[string]interface{}{
 			"name":       c.Name,
@@ -83,7 +82,7 @@ func (c *Client) UpdateAClient(db *gorm.DB, cid uint32) (*Client, error) {
 		return &Client{}, db.Error
 	}
 
-	err := db.Debug().Model(&Client{}).Where("id = ?", cid).Take(&c).Error
+	err = db.Debug().Model(&Client{}).Where("id = ?", cid).Take(&c).Error
 	if err != nil {
 		return &Client{}, err
 	}
@@ -91,8 +90,8 @@ func (c *Client) UpdateAClient(db *gorm.DB, cid uint32) (*Client, error) {
 	return c, nil
 }
 
-func (c *Client) DeleteAClient(db *gorm.DB, uid uint32) (int64, error) {
-	db = db.Debug().Model(&Client{}).Where("id = ?", uid).Take(&Client{}).Delete(&Client{})
+func (c *Client) DeleteAClient(db *gorm.DB, cid uint32) (int64, error) {
+	db = db.Debug().Model(&Client{}).Where("id = ?", cid).Take(&Client{}).Delete(&Client{})
 	if db.Error != nil {
 		return 0, db.Error
 	}

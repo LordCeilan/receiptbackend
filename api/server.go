@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/LordCeilan/receiptbackend/api/controllers"
-	"github.com/LordCeilan/receiptbackend/api/seed"
+	"github.com/LordCeilan/receiptbackend/api/db"
 	"github.com/joho/godotenv"
 )
 
@@ -33,6 +33,6 @@ func Run() {
 	// server.Initialize(os.Getenv(""), os.Getenv(""), os.Getenv(""), os.Getenv(""), os.Getenv(""), os.Getenv(""))
 
 	server.Initialize(os.Getenv("DB_DRIVER"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PORT"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME"))
-	seed.Load(server.DB)
+	db.Load(server.DB)
 	server.Run(":3000")
 }
