@@ -38,17 +38,17 @@ func (server *Server) CreateClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uid, err := auth.ExtractTokenID(r)
+	_, err = auth.ExtractTokenID(r)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 		return
 	}
 
-	if uid != client.ID {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
-		return
-	}
+	// if uid != client.ID {
+	// 	responses.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
+	// 	return
+	// }
 
 	clientCreated, err := client.SaveClient(server.DB)
 
@@ -58,7 +58,7 @@ func (server *Server) CreateClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Lacation", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, clientCreated.ID))
+	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, clientCreated.ID))
 	responses.JSON(w, http.StatusCreated, clientCreated)
 }
 

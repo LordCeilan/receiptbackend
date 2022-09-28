@@ -38,17 +38,17 @@ func (server *Server) CreateReceipt(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uid, err := auth.ExtractTokenID(r)
+	_, err = auth.ExtractTokenID(r)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 		return
 	}
 
-	if uid != receipt.ClientID {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
-		return
-	}
+	// if uid != receipt.ClientID {
+	// 	responses.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
+	// 	return
+	// }
 
 	receiptCreated, err := receipt.SaveReceipt(server.DB)
 

@@ -69,7 +69,7 @@ func (server *Server) GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := models.User{}
-	userGotten, err := user.FindUserByID(server.DB, uint32(uid))
+	userGotten, err := user.FindUserByID(server.DB, uid)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
@@ -108,7 +108,7 @@ func (server *Server) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if tokenID != uint32(uid) {
+	if tokenID != uid {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
 		return
 	}
@@ -121,7 +121,7 @@ func (server *Server) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updateUser, err := user.UpdateAUser(server.DB, uint32(uid))
+	updateUser, err := user.UpdateAUser(server.DB, uid)
 	if err != nil {
 		formattedError := formaterror.FormatError(err.Error())
 		responses.ERROR(w, http.StatusInternalServerError, formattedError)
@@ -148,7 +148,7 @@ func (server *Server) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if tokenID != 0 && tokenID != uint32(uid) {
+	if tokenID != 0 && tokenID != uid {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New(http.StatusText(http.StatusUnauthorized)))
 		return
 

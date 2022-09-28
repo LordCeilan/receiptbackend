@@ -13,6 +13,7 @@ func (s *Server) initializeRoutes() {
 	s.Router.HandleFunc("/users", middlewares.SetMiddlewareJSON(s.CreateUser)).Methods("POST")
 	s.Router.HandleFunc("/users", middlewares.SetMiddlewareJSON(s.GetUsers)).Methods("GET")
 	s.Router.HandleFunc("/users/{id}", middlewares.SetMiddlewareJSON(s.GetUser)).Methods("GET")
+	//put method not working properly, need to check.
 	s.Router.HandleFunc("/users/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.UpdateUser))).Methods("PUT")
 	s.Router.HandleFunc("/users/{id}", middlewares.SetMiddlewareAuthentication(s.DeleteUser)).Methods("DELETE")
 
@@ -26,7 +27,7 @@ func (s *Server) initializeRoutes() {
 	//Create clients controllers/
 	//Client routes
 	s.Router.HandleFunc("/client", middlewares.SetMiddlewareJSON(s.CreateClient)).Methods("POST")
-	s.Router.HandleFunc("/clients", middlewares.SetMiddlewareJSON(s.GetClient)).Methods("GET")
+	s.Router.HandleFunc("/clients", middlewares.SetMiddlewareJSON(s.GetClients)).Methods("GET")
 	s.Router.HandleFunc("/clients/{id}", middlewares.SetMiddlewareJSON(s.GetClient)).Methods("GET")
 	s.Router.HandleFunc("/clients/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.UpdateAClient))).Methods("PUT")
 	s.Router.HandleFunc("/client/{id}", middlewares.SetMiddlewareAuthentication(s.DeleteAClient)).Methods("DELETE")

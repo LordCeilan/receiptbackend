@@ -11,18 +11,17 @@ import (
 
 type Receipt struct {
 	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
-	Contents  string    `gorm:"size:255;not null:unique" json:"content"`
-	Amount    uint32    `gorm:"not null" json:"amount"`
+	Contents  string    `gorm:"size:255;not null:unique" json:"contents"`
+	Amount    uint64    `gorm:"not null" json:"amount"`
 	Client    Client    `json:"client"`
-	ClientID  uint32    `gorm:"not null" json:"clientId"`
+	ClientID  uint64    `gorm:"not null" json:"client_id"`
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
 func (r *Receipt) Prepare() {
-	r.ClientID = 0
+	r.ID = 0
 	r.Contents = html.EscapeString(strings.TrimSpace(r.Contents))
-	r.Amount = 0
 	r.Client = Client{}
 	r.CreatedAt = time.Now()
 	r.UpdatedAt = time.Now()
@@ -37,7 +36,7 @@ func (r *Receipt) Validate() error {
 		return errors.New("required Amount")
 	}
 
-	if r.ClientID < 1 {
+	if r.ClientID == 0 {
 		return errors.New("required Client")
 	}
 	return nil
@@ -51,7 +50,9 @@ func (r *Receipt) SaveReceipt(db *gorm.DB) (*Receipt, error) {
 	}
 
 	if r.ID != 0 {
-		err = db.Debug().Model(&Client{}).Where("id = ?", r.ClientID).Take(&r.Client).Error
+
+		err = db.Debug().Model(&Receipt{}).Where("id = ?", r.ClientID).Take(&r.ClientID).Error
+
 		if err != nil {
 			return &Receipt{}, err
 		}
@@ -111,7 +112,7 @@ func (r *Receipt) UpdateAReceipt(db *gorm.DB) (*Receipt, error) {
 	return r, nil
 }
 
-func (r *Receipt) DeleteAReceipt(db *gorm.DB, rid uint64, cid uint32) (int64, error) {
+func (r *Receipt) DeleteAReceipt(db *gorm.DB, rid uint64, cid uint64) (int64, error) {
 	db = db.Debug().Model(&Receipt{}).Where("id = ? and clientId= ?", rid, cid).Take(&Receipt{})
 	if db.Error != nil {
 		if gorm.IsRecordNotFoundError(db.Error) {

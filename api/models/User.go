@@ -13,7 +13,7 @@ import (
 )
 
 type User struct {
-	ID        uint32    `gorm:"primary_key;auto_increment" json:"id"`
+	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
 	NickName  string    `gorm:"size:255;not null; unique" json:"nickname"`
 	Email     string    `gorm:"size:100;not null;unique" json:"email"`
 	Password  string    `gorm:"size:100;not null;unique" json:"password"`
@@ -110,7 +110,7 @@ func (u *User) FindAllUsers(db *gorm.DB) (*[]User, error) {
 	return &users, err
 }
 
-func (u *User) FindUserByID(db *gorm.DB, uid uint32) (*User, error) {
+func (u *User) FindUserByID(db *gorm.DB, uid uint64) (*User, error) {
 	var err error
 	err = db.Debug().Model(User{}).Where("id = ?", uid).Take(&u).Error
 	if err != nil {
@@ -122,7 +122,7 @@ func (u *User) FindUserByID(db *gorm.DB, uid uint32) (*User, error) {
 	return u, err
 }
 
-func (u *User) UpdateAUser(db *gorm.DB, uid uint32) (*User, error) {
+func (u *User) UpdateAUser(db *gorm.DB, uid uint64) (*User, error) {
 	// To hash the passwod
 	var err error
 	err = u.BeforeSave()
@@ -143,6 +143,11 @@ func (u *User) UpdateAUser(db *gorm.DB, uid uint32) (*User, error) {
 		return &User{}, err
 	}
 
+	// This is the display the updated user
+	err = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&u).Error
+	if err != nil {
+		return &User{}, err
+	}
 	return u, err
 }
 

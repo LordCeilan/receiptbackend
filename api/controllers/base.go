@@ -74,7 +74,7 @@ func (server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, D
 
 	//server route will ease the proccess of receiving and handling the
 	//the controlers routes
-	http.Handle("/", server.Router)
+	http.Handle("/vue", server.Router)
 	server.initializeRoutes()
 }
 

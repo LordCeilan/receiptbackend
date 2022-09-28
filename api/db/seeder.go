@@ -63,6 +63,7 @@ func Load(db *gorm.DB) {
 	}
 
 	err = db.Debug().Model(&models.Receipt{}).AddForeignKey("client_id", "clients(id)", "cascade", "cascade").Error
+
 	if err != nil {
 		log.Fatalf("attaching foreign key error: %v", err)
 	}
