@@ -80,7 +80,7 @@ func (r *Receipt) FindAllReceipts(db *gorm.DB) (*[]Receipt, error) {
 	return &receipts, nil
 }
 
-func (r *Receipt) FindReceiptById(db *gorm.DB, rid uint) (*Receipt, error) {
+func (r *Receipt) FindReceiptById(db *gorm.DB, rid uint64) (*Receipt, error) {
 	err := db.Debug().Model(&Receipt{}).Where("id = ?", rid).Take(&r).Error
 
 	if err != nil {
